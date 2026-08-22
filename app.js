@@ -123,13 +123,18 @@ function mostrarMenu() {
     });
 }
 
-// Pide la categoría y no avanza hasta que sea válida (acepta mayúsculas/minúsculas)
+// Busca la categoría real (con mayúscula correcta) sin importar cómo la escriba el usuario
+function buscarCategoria(texto) {
+    return categorias.find(
+        cat => cat.toLowerCase() === texto.trim().toLowerCase()
+    );
+}
+
+// Pide la categoría y no avanza hasta que sea válida
 function pedirCategoria(titulo, descripcion) {
     console.log(`Categorías disponibles: ${categorias.join(", ")}`);
     rl.question("Categoría: ", (categoria) => {
-        const categoriaEncontrada = categorias.find(
-            cat => cat.toLowerCase() === categoria.trim().toLowerCase()
-        );
+        const categoriaEncontrada = buscarCategoria(categoria);
 
         if (!categoriaEncontrada) {
             console.log("Categoría no válida. Escribe: Estudio, Trabajo o Personal.");
@@ -175,7 +180,13 @@ function manejarOpcion(opcion) {
 
         case "6":
             rl.question(`Categoría (${categorias.join(", ")}): `, (categoria) => {
-                listarPorCategoria(categoria);
+                const categoriaEncontrada = buscarCategoria(categoria);
+
+                if (!categoriaEncontrada) {
+                    console.log("Categoría no válida.");
+                } else {
+                    listarPorCategoria(categoriaEncontrada);
+                }
                 mostrarMenu();
             });
             break;
