@@ -123,20 +123,30 @@ function mostrarMenu() {
     });
 }
 
+// Pide la categoría y no avanza hasta que sea válida (acepta mayúsculas/minúsculas)
+function pedirCategoria(titulo, descripcion) {
+    console.log(`Categorías disponibles: ${categorias.join(", ")}`);
+    rl.question("Categoría: ", (categoria) => {
+        const categoriaEncontrada = categorias.find(
+            cat => cat.toLowerCase() === categoria.trim().toLowerCase()
+        );
+
+        if (!categoriaEncontrada) {
+            console.log("Categoría no válida. Escribe: Estudio, Trabajo o Personal.");
+            pedirCategoria(titulo, descripcion);
+        } else {
+            agregarTarea(titulo, descripcion, categoriaEncontrada);
+            mostrarMenu();
+        }
+    });
+}
+
 function manejarOpcion(opcion) {
     switch (opcion) {
         case "1":
             rl.question("Título de la tarea: ", (titulo) => {
                 rl.question("Descripción: ", (descripcion) => {
-                    console.log(`Categorías disponibles: ${categorias.join(", ")}`);
-                    rl.question("Categoría: ", (categoria) => {
-                        if (!categorias.includes(categoria)) {
-                            console.log("Categoría no válida, se usará 'Estudio' por defecto.");
-                            categoria = "Estudio";
-                        }
-                        agregarTarea(titulo, descripcion, categoria);
-                        mostrarMenu();
-                    });
+                    pedirCategoria(titulo, descripcion);
                 });
             });
             break;
