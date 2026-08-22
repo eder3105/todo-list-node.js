@@ -99,39 +99,88 @@ function listarPorCategoria(categoria) {
     });
 }
 
-// ==== PRUEBAS ====
+// ==== MENÚ INTERACTIVO ====
+const readline = require('readline');
 
-// Agregamos tareas de prueba en distintas categorías
-agregarTarea(
-    "Hacer el laboratorio de Node.js",
-    "Completar la tarea del laboratorio",
-    "Estudio"
-);
+const rl = readline.createInterface({
+    input: process.stdin,
+    output: process.stdout
+});
 
-agregarTarea(
-    "Preparar informe semanal",
-    "Redactar avances del sprint",
-    "Trabajo"
-);
+function mostrarMenu() {
+    console.log("\n========== MENÚ ==========");
+    console.log("1. Agregar tarea");
+    console.log("2. Listar todas las tareas");
+    console.log("3. Listar tareas pendientes");
+    console.log("4. Listar tareas completadas");
+    console.log("5. Marcar tarea como completada");
+    console.log("6. Listar tareas por categoría");
+    console.log("7. Salir");
+    console.log("===========================");
 
-agregarTarea(
-    "Salir a correr",
-    "30 minutos de trote",
-    "Personal"
-);
+    rl.question("Elige una opción: ", (opcion) => {
+        manejarOpcion(opcion.trim());
+    });
+}
 
-// Listamos todas las tareas
-listarTareas("todas");
+function manejarOpcion(opcion) {
+    switch (opcion) {
+        case "1":
+            rl.question("Título de la tarea: ", (titulo) => {
+                rl.question("Descripción: ", (descripcion) => {
+                    console.log(`Categorías disponibles: ${categorias.join(", ")}`);
+                    rl.question("Categoría: ", (categoria) => {
+                        if (!categorias.includes(categoria)) {
+                            console.log("Categoría no válida, se usará 'Estudio' por defecto.");
+                            categoria = "Estudio";
+                        }
+                        agregarTarea(titulo, descripcion, categoria);
+                        mostrarMenu();
+                    });
+                });
+            });
+            break;
 
-// Marcamos la primera tarea como completada
-marcarCompletada(1);
+        case "2":
+            listarTareas("todas");
+            mostrarMenu();
+            break;
 
-// Comprobamos el cambio con los distintos filtros
-listarTareas("todas");
-listarTareas("pendientes");
-listarTareas("completadas");
+        case "3":
+            listarTareas("pendientes");
+            mostrarMenu();
+            break;
 
-// Listamos tareas agrupadas por categoría
-listarPorCategoria("Estudio");
-listarPorCategoria("Trabajo");
-listarPorCategoria("Personal");
+        case "4":
+            listarTareas("completadas");
+            mostrarMenu();
+            break;
+
+        case "5":
+            rl.question("ID de la tarea a marcar como completada: ", (id) => {
+                marcarCompletada(Number(id));
+                mostrarMenu();
+            });
+            break;
+
+        case "6":
+            rl.question(`Categoría (${categorias.join(", ")}): `, (categoria) => {
+                listarPorCategoria(categoria);
+                mostrarMenu();
+            });
+            break;
+
+        case "7":
+            console.log("¡Hasta luego!");
+            rl.close();
+            break;
+
+        default:
+            console.log("Opción no válida, intenta de nuevo.");
+            mostrarMenu();
+            break;
+    }
+}
+
+// Iniciamos el menú
+mostrarMenu();
